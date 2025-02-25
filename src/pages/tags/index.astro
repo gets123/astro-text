@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+// Astro.glob 是 异步 的，适用于在运行时动态加载文件内容，通常用在需要延迟加载或者动态处理的场景
+// const allPosts = await Astro.glob('../posts/*.md')
+// import.meta.glob 是 同步 的，并且通过 { eager: true } 强制在构建时就加载所有匹配的文件，适用于静态内容的快速导入和打包
+const allPosts = Object.values(
+	import.meta.glob('../posts/*.md', { eager: true })
+)
+const tags = [...new Set(allPosts.map(post => post.frontmatter.tags).flat())]
+const pageTitle = 'Tag Index'
+---
+
+<style>
+	a {
+		color: #00539f;
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.tag {
+		margin: 0.25em;
+		border: dotted 1px #a1a1a1;
+		border-radius: 0.5em;
+		padding: 0.5em 1em;
+		font-size: 1.15em;
+		background-color: #f8fcfd;
+	}
+</style>
+<BaseLayout pageTitle={pageTitle}>
+	<div class="tags">
+		{
+			tags.map(tag => (
+				<p class="tag">
+					<a href={`/tags/${tag}`}>{tag}</a>
+				</p>
+			))
+		}
+	</div>
+</BaseLayout>
